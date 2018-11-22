@@ -1,0 +1,17 @@
+{%  extends('layout.html.twig') %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+{% endblock %}
+
+{% block main %}
+    <h1 class="text-center">Bienvenue sur Slaque !</h1>
+    <img class="rounded mx-auto d-block" src="{{ asset('img/logoslack.png') }}"><br>
+    <h2 class="text-center">Veuillez vous inscrire ou vous identifiez pour continuer ! </h2>
+    {{  form_start(form_register) }}
+    {{ form_widget(form_register) }}
+    <button class="btn btn-dark">Créer le compte</button> Ou <a href="{{ path("user_login") }}">Identifiez-vous</a>
+    {{ form_end(form_register) }}
+{% endblock %}
+
+{%  block title %}Home{% endblock %}

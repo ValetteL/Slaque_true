@@ -1,0 +1,15 @@
+{%  extends('layout.html.twig') %}
+
+
+{% block main %}
+
+    <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
+        <div class="col-md-5 p-lg-5 mx-auto my-5">
+            <h1 class="display-6 font-weight-normal"><img class="rounded mx-auto d-block" src="{{ asset('img/logoslack.png') }}"><br>Bienvenue sur Slaque !</h1>
+            <p class="lead font-weight-normal">Slaque est une application web de messagerie permettant de communiquer blablabla</p>
+            <a class="btn btn-outline-secondary" href="{{ path('message') }}">Essayer !</a>
+        </div>
+    </div>
+{% endblock %}
+
+{%  block title %}Home{% endblock %}
