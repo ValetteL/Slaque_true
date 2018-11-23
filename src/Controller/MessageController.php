@@ -25,10 +25,11 @@ class MessageController extends Controller
     {
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         $messageRepository = $this->getDoctrine()->getRepository(Message::class);
+        $groupRepository = $this->getDoctrine()->getRepository(Group::class);
 
-        $users = $userRepository->searchUser();
+        $users = $userRepository->searchUser($this->getUser());
 
-        $groups = $this->getUser()->getGroupCreated();
+        $groups = $groupRepository->getGroup($this->getUser());
 
         $messages = $messageRepository->findBy(
             ["author" => $this->getUser()], //clauses where

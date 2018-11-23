@@ -385,4 +385,8 @@ class User implements UserInterface, \JsonSerializable
 
         return $this;
     }
+
+    public function __toArray(){
+
+    }
 }

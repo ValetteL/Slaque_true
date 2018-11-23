@@ -1,48 +1,102 @@
 function loadMessages(){
     //console.log("loadMessage(" + $(".active_chat").data("id") + ")");
-    $.ajax({
-        url: $("#load-messages").data("url"),
-        data: {
-            'receiver' : $(".active_chat").data("id")
-        },
-        method: 'post'
-    }).done(function (messages) {
-        let html = "";
-        messages.forEach(function (message) {
-            console.log("message.author : " + message.author + ", message.receiver : " + message.receiver + ", message.dateCreated : " + message.dateCreated + ", message.content : " + message.content);
-            if(message.author == $(".active_chat").data("id")){
-                html += '<div class="incoming_msg">' +
 
-                    '<div class="incoming_msg_img"> <img src="/slaque/public/img/chat.jpg"> </div>' +
+    //si on charge les messages d'un user
+    if($(".active_chat").length) {
+        $.ajax({
+            url: $("#load-messages").data("url"),
+            data: {
+                'receiver': $(".active_chat").data("id")
+            },
+            method: 'post'
+        }).done(function (messages) {
+            let html = "";
+            messages.forEach(function (message) {
+                console.log("message.author : " + message.author  + ", message.dateCreated : " + message.dateCreated + ", message.content : " + message.content);
+                if (message.author != $("#user_id").val()) {
+                    html += '<div class="incoming_msg">' +
 
-                    '<div class="received_msg">' +
+                        '<div class="incoming_msg_img"> <img src="/slaque/public/img/chat.jpg"> </div>' +
 
-                    '<div class="received_withd_msg">' +
+                        '<div class="received_msg">' +
 
-                    '<p>' + message.content + '</p>' +
+                        '<div class="received_withd_msg">' +
 
-                    '<span class="time_date">' + message.dateCreated + '</span>' +
+                        '<p>' + message.content + '</p>' +
 
-                    '</div>' +
+                        '<span class="time_date">' + message.dateCreated + '</span>' +
 
-                    '</div>';
-            } else {
-                html += '<div class="outgoing_msg">' +
+                        '</div>' +
 
-                    '<div class="sent_msg">' +
+                        '</div>';
+                } else {
+                    html += '<div class="outgoing_msg">' +
 
-                    '<p>' + message.content + '</p>' +
+                        '<div class="sent_msg">' +
 
-                    '<span class="time_date">' + message.dateCreated + '</span>' +
+                        '<p>' + message.content + '</p>' +
 
-                    '</div>' +
+                        '<span class="time_date">' + message.dateCreated + '</span>' +
 
-                    '</div>';
-            }
-        })
-        //console.log("html : " + html);
-        $("div.msg_history").html(html).scrollTop($("div.msg_history").prop('scrollHeight'));
-    });
+                        '</div>' +
+
+                        '</div>';
+                }
+            })
+            //console.log("html : " + html);
+            $("div.msg_history").html(html).scrollTop($("div.msg_history").prop('scrollHeight'));
+        });
+
+    //Sinon les messages d'un groupe
+    } else {
+        console.log("group id = " + $("#group_button").attr('data-id'));
+        $.ajax({
+            url: $("#load-messages").data("url"),
+            data: {
+                'groupId': $("#group_button").attr('data-id')
+            },
+            method: 'post'
+        }).done(function (group) {
+            console.log('group messages : ' + group.messages);
+            let html = "";
+            group.messages.forEach(function (message) {
+                console.log(message);
+                //console.log("message.author : " + message.author + ", message.dateCreated : " + message.dateCreated + ", message.content : " + message.content);
+                console.log("message.author.id : " + message.author + " == " + $("#user_id").val())
+                if (message.author != $("#user_id").val()) {
+                    html += '<div class="incoming_msg">' +
+
+                        '<div class="incoming_msg_img"> <img src="/slaque/public/img/chat.jpg"> </div>' +
+
+                        '<div class="received_msg">' +
+
+                        '<div class="received_withd_msg">' +
+
+                        '<p>' + message.content + '</p>' +
+
+                        '<span class="time_date">' + message.dateCreated + '</span>' +
+
+                        '</div>' +
+
+                        '</div>';
+                } else {
+                    html += '<div class="outgoing_msg">' +
+
+                        '<div class="sent_msg">' +
+
+                        '<p>' + message.content + '</p>' +
+
+                        '<span class="time_date">' + message.dateCreated + '</span>' +
+
+                        '</div>' +
+
+                        '</div>';
+                }
+            })
+            //console.log("html : " + html);
+            $("div.msg_history").html(html).scrollTop($("div.msg_history").prop('scrollHeight'));
+        });
+    }
 }
 
 $(".inbox_people").on("click","div.chat_list", function(){
@@ -53,39 +107,41 @@ $(".inbox_people").on("click","div.chat_list", function(){
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function doAjax(e){
+function sendMessage(e){
     e.preventDefault();
-    console.log("test id = " + $(".active_chat").data("id"));
-    $.ajax({
-        url: $("#last-message").data("url"),
-        data: {
-            'message' : $("#message_content").val(),
-            'receiver' : $(".active_chat").data("id")
-        },
-        method: 'post'
-    }).done(function (messages) {
-        console.log(messages);
-        messages.forEach(function (message) {
-            let html = '<div class="outgoing_msg">' +
-
-            '<div class="sent_msg">' +
-
-            '<p>' + message.content + '</p>' +
-
-            '<span class="time_date">' + message.dateCreated + '</span>' +
-
-            '</div>' +
-
-            '</div>';
-            $("div.msg_history").append(html).scrollTop($("div.msg_history").prop('scrollHeight'));
+    //Si on envoi à un user
+    if($(".active_chat").length) {
+        console.log("receiver id = " + $(".active_chat").data("id"));
+        $.ajax({
+            url: $("#last-message").data("url"),
+            data: {
+                'message': $("#message_content").val(),
+                'receiver': $(".active_chat").data("id")
+            },
+            method: 'post'
+        }).done(function () {
+            $("#message_content").val('');
+            loadMessages();
+        })
+    //Sinon à une conv
+    } else {
+        console.log("group id = " + $("button.dropdown-toggle").data("id"));
+        $.ajax({
+            url: $("#last-message").data("url"),
+            data: {
+                'message': $("#message_content").val(),
+                'groupId': $("button.dropdown-toggle").data("id")
+            },
+            method: 'post'
+        }).done(function (group) {
+            loadMessages();
             $("#message_content").val('');
             console.log("message envoyé !");
-        //})
-        });
-    })
+        })
+    }
 }
 
-$("form[name='message']").on("submit", doAjax);
+$("form[name='message']").on("submit", sendMessage);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function searchUser(e){
@@ -171,7 +227,7 @@ $("form[name='group']").on("submit", createGroup);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function showGroup(id){
-    console.log("group id : " + id);
+    //console.log("group id : " + id);
     $.ajax({
         url: $("#show-group").data("url"),
         data: {
@@ -186,7 +242,7 @@ function showGroup(id){
                 '</a>' +
                 '<div class="inbox_chat_list">';
         group.members.forEach(function (member) {
-            console.log("member : " + member);
+            console.log("member : " + member.id);
             html += '<div class="chat_list" data-id="' + member.id + '">' +
 
                 '<div class="chat_people">' +
@@ -207,7 +263,7 @@ function showGroup(id){
         })
         html += '</div>';
         $("div.inbox_chat").html(html);
-
+        loadMessages();
     });
 }
 
@@ -220,6 +276,7 @@ $(".recent_heading").on("click", '#show-group', function(){
 });
 
 $(".inbox_chat").on("click", '#return_friendlist', searchUser);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function addMember(e){
     e.preventDefault();
@@ -232,14 +289,16 @@ function addMember(e){
         },
         method: 'post'
     }).done(function (group) {
-        console.log("showgroup(" + group.id + ")");
+        //console.log("showgroup(" + group.id + ")");
         showGroup(group.id);
     })
+    $(".close").click();
 }
 
 $("form[name='member']").on("submit", addMember);
 
 
-setInterval(loadMessages, 2000);
+//Actualisation des messages toutes les 3 secondes
+setInterval(loadMessages, 3000);
 
 

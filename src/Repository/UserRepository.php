@@ -19,13 +19,15 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function searchUser(string $username = null)
+    public function searchUser(User $user, string $username = null)
     {
         //Version en Query Builder
         $qb = $this->createQueryBuilder('u');
         $qb->select('u');
         //->andWhere('w.dateCreated >= 2018')
         $qb->addOrderBy('u.username', 'ASC');
+        $qb->andWhere('u.username != :user');
+        $qb->setParameter('user', $user->getUsername());
 
         if($username){
             $qb->andWhere('u.username LIKE :username');

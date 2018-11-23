@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Member;
 use App\Entity\Message;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -27,6 +28,7 @@ class MessageRepository extends ServiceEntityRepository
         $qb->select('m');
         //->andWhere('w.dateCreated >= 2018')
         $qb->addOrderBy('m.dateCreated', 'ASC');
+        $qb->andWhere('m.author != m.receiver');
         $qb->andWhere('m.receiver = :receiver OR m.receiver = :receiver2');
         $qb->setParameter('receiver', $receiver);
         $qb->setParameter('receiver2', $user);

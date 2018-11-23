@@ -159,6 +159,6 @@ class Message implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return ['author' => $this->getAuthor()->getId(), 'content' => $this->getContent(), 'dateCreated' => $this->getDateCreated()->format('d/m/Y à H:i'), 'receiver' => $this->getReceiver()->getId()];
+        return ['author' => $this->getAuthor()->getId(), 'content' => $this->getContent(), 'dateCreated' => $this->getDateCreated()->format('d/m/Y à H:i')];
     }
 }
